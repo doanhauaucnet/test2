@@ -1,26 +1,20 @@
-name: Create Branch on Issue Creation
-
 on:
+  # The issue.opened event below is only needed for the "immediate" mode.
+  # The issue.assigned event below is only needed for the default ("auto") mode.
   issues:
-    types: [opened]
+    types: [ opened, assigned ]
+  # The issue_comment.created event below is only needed for the ChatOps mode.
+  issue_comment:
+    types: [ created ]
+  # The pull_request events below are only needed for pull-request related features.
+  pull_request:
+    types: [ opened, closed ]
 
 jobs:
-  create-branch:
+  create_issue_branch_job:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Check out code
-        uses: actions/checkout@v2
-
-      - name: Set up Git
-        run: |
-          git config --global user.email "actions@github.com"
-          git config --global user.name "GitHub Actions"
-
-      - name: Create branch
+      - name: Create Issue Branch
+        uses: robvanderleek/create-issue-branch@main
         env:
-          GITHUB_TOKEN: ${{ secrets.PAT }}
-        run: |
-          branch_name=$(echo ${{ github.event.issue.title }} | tr '[:upper:]' '[:lower:]' | sed 's/[^a-zA-Z0-9]/-/g')
-          git checkout -b $branch_name
-          git push origin $branch_name
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
