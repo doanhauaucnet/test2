@@ -1,7 +1,15 @@
 name: Create Branch on New Issue
 on:
+  # The issue.opened event below is only needed for the "immediate" mode.
+  # The issue.assigned event below is only needed for the default ("auto") mode.
   issues:
-    types: [opened]
+    types: [ opened, assigned ]
+  # The issue_comment.created event below is only needed for the ChatOps mode.
+  issue_comment:
+    types: [ created ]
+  # The pull_request events below are only needed for pull-request related features.
+  pull_request:
+    types: [ opened, closed ]
 
 jobs:
   create_branch_job:
@@ -10,11 +18,19 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
+      - name: Read settings file
+        id: read_settings
+        run: |
+          echo "::set-output name=branch_prefix::$(jq -r '.prefix' branch-settings.json)"
+          echo "::set-output name=branch_suffix::$(jq -r '.suffix' branch-settings.json)"
+
       - name: Create Branch
         env:
-          PAT: ${{ secrets.GITHUB_TOKEN  }}
+          PAT: ${{ secrets.GITHUB_TOKEN }}
+          branch_name_prefix: ${{ steps.read_settings.outputs.branch_prefix }}
+          branch_name_suffix: ${{ steps.read_settings.outputs.branch_suffix }}
         run: |
           issue_title=$(jq -r '.issue.title' $GITHUB_EVENT_PATH)
-          branch_name=$(echo $issue_title | tr '[:upper:]' '[:lower:]' | tr ' ' '-')
+          branch_name="${branch_name_prefix}$(echo $issue_title | tr '[:upper:]' '[:lower:]' | tr ' ' '-')${branch_name_suffix}"
           git checkout -b $branch_name
           git push origin $branch_name
