@@ -16,12 +16,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check GitHub Token Permissions
-          id: check_permissions
-          run: |
-            curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-                -H "Accept: application/vnd.github.v3+json" \
-                https://api.github.com/user/repos
-          continue-on-error: true
+        id: check_permissions
+        run: |
+          curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+              -H "Accept: application/vnd.github.v3+json" \
+              https://api.github.com/user/repos
+        continue-on-error: true
       - name: Create Issue Branch
         uses: robvanderleek/create-issue-branch@main
         env:
