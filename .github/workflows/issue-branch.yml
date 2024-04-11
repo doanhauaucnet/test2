@@ -12,7 +12,7 @@ jobs:
 
       - name: Create Branch
         env:
-          PAT: ${{ secrets.PAT }}
+          PAT: ${{ secrets.GITHUB_TOKEN  }}
         run: |
           issue_title=$(jq -r '.issue.title' $GITHUB_EVENT_PATH)
           branch_name=$(echo $issue_title | tr '[:upper:]' '[:lower:]' | tr ' ' '-')
