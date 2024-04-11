@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check Permissions
-        run: echo "Token Permissions: ${{ toJson(secrets.GITHUB_TOKEN) }}
+        run: echo "Token Permissions: ${{ toJson(github.token) }}"
       - name: Create Issue Branch
         uses: robvanderleek/create-issue-branch@main
         env:
